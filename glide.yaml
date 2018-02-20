@@ -1,0 +1,4 @@
+package: github.com/hamidfzm/timechi-server
+import:
+- package: github.com/spf13/cobra
+  version: v0.0.1
