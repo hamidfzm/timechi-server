@@ -12,7 +12,9 @@ type UserControllerV1 struct{}
 
 func (c UserControllerV1) Register(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 	var req jsons.RegisterV1
-	helpers.DecodeJson(r, &req)
+	if err := helpers.DecodeJson(r, &req); err != nil {
+		helpers.Abort(w, http.StatusBadRequest)
+	}
 	
 	var user models.User
 	req.To(&user)
@@ -20,5 +22,5 @@ func (c UserControllerV1) Register(w http.ResponseWriter, r *http.Request, p htt
 	var resp jsons.PublicProfileV1
 	resp.From(&user)
 	
-	helpers.EncodeJson(w, &resp)
+	helpers.EncodeJson(w, http.StatusCreated, &resp)
 }

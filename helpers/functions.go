@@ -12,9 +12,10 @@ func DecodeJson(r *http.Request, data interface{}) error {
 	return json.NewDecoder(r.Body).Decode(data)
 }
 
-func EncodeJson(w http.ResponseWriter, data interface{}) error {
+func EncodeJson(w http.ResponseWriter, statusCode int, data interface{}) error {
 	if j, err := json.Marshal(data); err == nil {
 		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(statusCode)
 		fmt.Fprintf(w, "%s", j)
 		
 		return nil
@@ -36,4 +37,10 @@ func AssertStatus(t *testing.T, responseCode int, assertCode int) {
 	if responseCode != assertCode {
 		t.Errorf("Wrong status code: Got %d, expected %d", responseCode, assertCode)
 	}
+}
+
+func Abort(w http.ResponseWriter, statusCode int) {
+	message := http.StatusText(statusCode)
+	http.Error(w, message, statusCode)
+	panic(ErrorAbort{message})
 }
