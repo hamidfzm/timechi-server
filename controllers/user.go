@@ -8,9 +8,9 @@ import (
 	"github.com/hamidfzm/timechi-server/models"
 )
 
-type UserController struct{}
+type UserControllerV1 struct{}
 
-func (c UserController) Register(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+func (c UserControllerV1) Register(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 	var req jsons.RegisterV1
 	helpers.DecodeJson(r, &req)
 	

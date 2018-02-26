@@ -10,6 +10,6 @@ var Router *httprouter.Router
 func init() {
 	Router = httprouter.New()
 	
-	userController := controllers.UserController{}
-	Router.POST("/user", userController.Register)
+	userController := controllers.UserControllerV1{}
+	Router.POST("/v1/user", userController.Register)
 }

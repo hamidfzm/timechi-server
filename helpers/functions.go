@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"golang.org/x/crypto/bcrypt"
 	"fmt"
+	"testing"
 )
 
 func DecodeJson(r *http.Request, data interface{}) error {
@@ -29,4 +30,10 @@ func HashPassword(password string) []byte {
 	}
 	
 	return hashedPassword
+}
+
+func AssertStatus(t *testing.T, responseCode int, assertCode int) {
+	if responseCode != assertCode {
+		t.Errorf("Wrong status code: Got %d, expected %d", responseCode, assertCode)
+	}
 }
