@@ -4,9 +4,9 @@ import (
 	"testing"
 	"net/http"
 	"bytes"
-	"github.com/hamidfzm/timechi-server/router"
 	"net/http/httptest"
 	"github.com/hamidfzm/timechi-server/helpers"
+	"github.com/hamidfzm/timechi-server/controllers"
 )
 
 func TestUserControllerV1_Register(t *testing.T) {
@@ -17,7 +17,8 @@ func TestUserControllerV1_Register(t *testing.T) {
 	}
 	resp := httptest.NewRecorder()
 	
-	router.Router.ServeHTTP(resp, req)
+	controllers.SetupRouter()
+	controllers.Router.ServeHTTP(resp, req)
 	
 	helpers.AssertStatus(t, resp.Code, http.StatusCreated)
 }

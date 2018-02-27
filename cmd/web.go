@@ -3,7 +3,6 @@ package cmd
 import (
 	"github.com/spf13/cobra"
 	"net/http"
-	"github.com/hamidfzm/timechi-server/router"
 	"github.com/hamidfzm/timechi-server/helpers"
 	"fmt"
 	"github.com/rs/zerolog/log"
@@ -12,6 +11,8 @@ import (
 	"os/signal"
 	"context"
 	"time"
+	"github.com/hamidfzm/timechi-server/controllers"
+	"github.com/hamidfzm/timechi-server/models"
 )
 
 func init() {
@@ -31,8 +32,11 @@ var webCmd = &cobra.Command{
 		
 		log.Info().Msgf("Listening on %s", addr)
 		
+		controllers.SetupRouter()
+		models.SetupDatabase()
+		
 		server := &http.Server{Addr: addr, Handler: buildChain(
-			router.Router,
+			controllers.Router,
 			helpers.LoggerMiddleware,
 		)}
 		
