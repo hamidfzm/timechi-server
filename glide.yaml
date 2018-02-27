@@ -12,3 +12,5 @@ import:
   version: v1.0.0
 - package: github.com/jinzhu/gorm
   version: v1.0
+  subpackages:
+  - dialects/sqlite

@@ -1,5 +1,5 @@
-hash: c335d1d61b7c9464e20a985376f3b05e9ecc1dd11fa61c6406528e10875c7598
-updated: 2018-02-26T07:35:57.31334417+03:30
+hash: 1b16371cc306103d639509f64e845371aae44d6cff8b083fa1abcb4c9120fab7
+updated: 2018-02-27T13:19:21.414101301+03:30
 imports:
 - name: github.com/fsnotify/fsnotify
   version: c2828203cd70a50dcccfb2761f8b1f8ceef9a8e9
@@ -18,12 +18,16 @@ imports:
   version: 76626ae9c91c4f2a10f34cad8ce83ea42c93bb75
 - name: github.com/jinzhu/gorm
   version: 5174cc5c242a728b435ea2be8a2f7f998e15429b
+  subpackages:
+  - dialects/sqlite
 - name: github.com/jinzhu/inflection
   version: 1c35d901db3da928c72a72d8458480cc9ade058f
 - name: github.com/julienschmidt/httprouter
   version: 8c199fb6259ffc1af525cc3ad52ee60ba8359669
 - name: github.com/magiconair/properties
   version: 2c9e9502788518c97fe44e8955cd069417ee89df
+- name: github.com/mattn/go-sqlite3
+  version: 696e2e43cb00dcb1acaf6073e01493e3c4197b75
 - name: github.com/mitchellh/mapstructure
   version: 00c29f56e2386353d58c599509e8dc3801b0d716
 - name: github.com/pelletier/go-toml
