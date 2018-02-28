@@ -6,13 +6,20 @@ import (
 	"golang.org/x/crypto/bcrypt"
 	"fmt"
 	"testing"
+	"gopkg.in/go-playground/validator.v9"
 )
 
-func DecodeJson(r *http.Request, data interface{}) error {
+var Validate *validator.Validate
+
+func init() {
+	Validate = validator.New()
+}
+
+func DecodeJsonRequest(r *http.Request, data interface{}) error {
 	return json.NewDecoder(r.Body).Decode(data)
 }
 
-func EncodeJson(w http.ResponseWriter, statusCode int, data interface{}) error {
+func EncodeJsonResponse(w http.ResponseWriter, statusCode int, data interface{}) error {
 	if j, err := json.Marshal(data); err == nil {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(statusCode)
@@ -36,6 +43,13 @@ func HashPassword(password string) []byte {
 func AssertStatus(t *testing.T, responseCode int, assertCode int) {
 	if responseCode != assertCode {
 		t.Errorf("Wrong status code: Got %d, expected %d", responseCode, assertCode)
+	}
+}
+
+func AssertEqual(t *testing.T, a interface{}, b interface{}) {
+	if a != b {
+		t.Errorf("%s != %s", a, b)
+		t.Fatal()
 	}
 }
 
