@@ -34,6 +34,7 @@ var webCmd = &cobra.Command{
 		
 		controllers.SetupRouter()
 		models.SetupDatabase()
+		defer models.DB.Close()
 		
 		server := &http.Server{Addr: addr, Handler: buildChain(
 			controllers.Router,
