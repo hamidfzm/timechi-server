@@ -14,3 +14,5 @@ import:
   version: v1.0
   subpackages:
   - dialects/sqlite
+- package: gopkg.in/go-playground/validator.v9
+  version: v9.11.0
