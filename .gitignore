@@ -6,6 +6,7 @@
 # User-specific stuff:
 .idea/
 config.*
+*.db
 
 ## File-based project format:
 *.iws
