@@ -12,15 +12,24 @@ type UserControllerV1 struct{}
 
 func (c UserControllerV1) Register(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 	var req jsons.RegisterV1
-	if err := helpers.DecodeJson(r, &req); err != nil {
+	
+	if err := helpers.DecodeJsonRequest(r, &req); err != nil {
 		helpers.Abort(w, http.StatusBadRequest)
+	}
+	
+	if err := helpers.Validate.Struct(req); err != nil {
+		helpers.Abort(w, http.StatusUnprocessableEntity)
 	}
 	
 	var user models.User
 	req.To(&user)
 	
+	if err := user.Create(); err != nil {
+		helpers.Abort(w, http.StatusConflict)
+	}
+	
 	var resp jsons.PublicProfileV1
 	resp.From(&user)
 	
-	helpers.EncodeJson(w, http.StatusCreated, &resp)
+	helpers.EncodeJsonResponse(w, http.StatusCreated, &resp)
 }
