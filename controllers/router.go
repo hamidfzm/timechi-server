@@ -12,5 +12,7 @@ func SetupRouter() {
 	Router.PanicHandler = helpers.PanicHandler
 	
 	userController := UserControllerV1{}
-	Router.POST("/v1/user", userController.Register)
+	Router.POST("/v1/user/register", userController.Register)
+	Router.POST("/v1/user/login", userController.Login)
+	Router.GET("/v1/user", Authenticate(userController.Profile))
 }

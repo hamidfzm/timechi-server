@@ -19,7 +19,7 @@ func TestUserControllerV1_Register(t *testing.T) {
 	var body *bytes.Buffer
 	var reqJson []byte
 	var respJson jsons.PublicProfileV1
-	url := "/v1/user"
+	url := "/v1/user/register"
 	
 	controllers.SetupRouter()
 	models.SetupTestDatabase()

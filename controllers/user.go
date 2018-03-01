@@ -33,3 +33,36 @@ func (c UserControllerV1) Register(w http.ResponseWriter, r *http.Request, p htt
 	
 	helpers.EncodeJsonResponse(w, http.StatusCreated, &resp)
 }
+
+func (c UserControllerV1) Login(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+	var req jsons.LoginV1
+	
+	if err := helpers.DecodeJsonRequest(r, &req); err != nil {
+		helpers.Abort(w, http.StatusBadRequest)
+	}
+	
+	if err := helpers.Validate.Struct(req); err != nil {
+		helpers.Abort(w, http.StatusUnprocessableEntity)
+	}
+	
+	if user, err := models.FindUserByEmail(req.Email); err != nil {
+		helpers.Abort(w, http.StatusNotFound)
+	} else if err := user.VerifyPassword(req.Password); err == nil {
+		token, _ := user.GenerateToken()
+		// TODO handle generate token error
+		helpers.EncodeJsonResponse(w, http.StatusOK, map[string]string{"token": token})
+		
+	} else {
+		helpers.Abort(w, http.StatusUnauthorized)
+		
+	}
+}
+
+func (c UserControllerV1) Profile(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+	var resp jsons.PublicProfileV1
+	
+	user, _ := r.Context().Value("user").(*models.User)
+	resp.From(user)
+	
+	helpers.EncodeJsonResponse(w, http.StatusOK, resp)
+}

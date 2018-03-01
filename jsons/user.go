@@ -17,6 +17,11 @@ func (j *RegisterV1) To(m *models.User) {
 	m.Password = helpers.HashPassword(j.Password)
 }
 
+type LoginV1 struct {
+	Email    string `json:"email" validate:"required,email"`
+	Password string `json:"password" validate:"required"`
+}
+
 type PublicProfileV1 struct {
 	Name  string `json:"name"`
 	Email string `json:"email"`

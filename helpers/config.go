@@ -11,6 +11,7 @@ import (
 type config struct {
 	Port      int
 	PrettyLog bool `mapstructure:"pretty_log"`
+	Secret    string
 }
 
 var Config config
@@ -20,6 +21,7 @@ func init() {
 	cobra.OnInitialize(initConfig)
 	viper.SetDefault("port", 8080)
 	viper.SetDefault("pretty_log", true)
+	viper.SetDefault("secret", "secret")
 }
 
 func initConfig() {
