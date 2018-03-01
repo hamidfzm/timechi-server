@@ -20,7 +20,7 @@ func SetupDatabase() {
 }
 
 func SetupTestDatabase() {
-	if db, err := gorm.Open("sqlite3", "test.db"); err != nil {
+	if db, err := gorm.Open("sqlite3", "../test.db"); err != nil {
 		panic("failed to connect database")
 	} else {
 		DB = db
