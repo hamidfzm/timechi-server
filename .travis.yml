@@ -20,4 +20,4 @@ install:
   - glide install
 
 script:
-  - goveralls -service=travis-ci
+  - goveralls -v -service=travis-ci
