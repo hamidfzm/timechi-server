@@ -21,3 +21,7 @@ install:
 
 script:
   - goveralls -v -service=travis-ci
+
+notifications:
+  email:
+    - hamidfzm@rishe.me
