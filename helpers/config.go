@@ -10,8 +10,8 @@ import (
 
 type config struct {
 	Port      int
-	PrettyLog bool `mapstructure:"pretty_log"`
 	Secret    string
+	Debug     bool
 }
 
 var Config config
@@ -20,7 +20,7 @@ var cfgFile string
 func init() {
 	cobra.OnInitialize(initConfig)
 	viper.SetDefault("port", 8080)
-	viper.SetDefault("pretty_log", true)
+	viper.SetDefault("debug", false)
 	viper.SetDefault("secret", "secret")
 }
 
@@ -42,7 +42,7 @@ func initConfig() {
 	}
 	viper.Unmarshal(&Config)
 	
-	if Config.PrettyLog {
+	if Config.Debug {
 		log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stdout})
 	}
 }
