@@ -20,15 +20,28 @@ func DecodeJsonRequest(r *http.Request, data interface{}) error {
 }
 
 func EncodeJsonResponse(w http.ResponseWriter, statusCode int, data interface{}) error {
-	if j, err := json.Marshal(data); err == nil {
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(statusCode)
-		fmt.Fprintf(w, "%s", j)
-		
-		return nil
+	if Config.Debug {
+		if j, err := json.MarshalIndent(data, "", "\t"); err == nil {
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(statusCode)
+			fmt.Fprintf(w, "%s", j)
+			
+			return nil
+		} else {
+			return err
+		}
 	} else {
-		return err
+		if j, err := json.Marshal(data); err == nil {
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(statusCode)
+			fmt.Fprintf(w, "%s", j)
+			
+			return nil
+		} else {
+			return err
+		}
 	}
+	
 }
 
 func HashPassword(password string) []byte {
