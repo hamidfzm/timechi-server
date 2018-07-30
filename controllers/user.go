@@ -60,9 +60,7 @@ func (c UserControllerV1) Login(w http.ResponseWriter, r *http.Request, p httpro
 
 func (c UserControllerV1) Profile(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 	var resp jsons.PublicProfileV1
-	
-	user, _ := r.Context().Value("user").(*models.User)
-	resp.From(user)
+	resp.From(currentUser(r))
 	
 	helpers.EncodeJsonResponse(w, http.StatusOK, resp)
 }
