@@ -15,7 +15,6 @@ type User struct {
 	Password     []byte `gorm:"not null"`
 	TimerTitle   *string
 	TimerStartAt *time.Time
-	Times        []Time
 }
 
 func (m *User) Create() error {
@@ -81,6 +80,11 @@ func (m *User) StopTimer() error {
 	}
 	
 	return tx.Commit().Error
+}
+
+func (m *User) Times() (times []Time) {
+	DB.Model(m).Related(&times)
+	return
 }
 
 type TokenClaims struct {
