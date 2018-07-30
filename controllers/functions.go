@@ -10,12 +10,12 @@ import (
 	"context"
 )
 
-func Authenticate(handler httprouter.Handle) httprouter.Handle {
+func authenticate(handler httprouter.Handle) httprouter.Handle {
 	return func(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 		
 		if token, err := jwt.ParseWithClaims(r.Header.Get("Authorization"), &models.TokenClaims{}, func(token *jwt.Token) (interface{}, error) {
 			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-				return nil, fmt.Errorf("Unexpected siging method")
+				return nil, fmt.Errorf("unexpected siging method")
 			}
 			return []byte(helpers.Config.Secret), nil
 		}); err == nil {
@@ -39,5 +39,13 @@ func Authenticate(handler httprouter.Handle) httprouter.Handle {
 		} else {
 			helpers.Abort(w, http.StatusUnauthorized)
 		}
+	}
+}
+
+func currentUser(r *http.Request) *models.User {
+	if user, ok := r.Context().Value("user").(*models.User); ok {
+		return user
+	} else {
+		panic(fmt.Sprintf("Use authenticate method for %s", r.URL.String()))
 	}
 }
