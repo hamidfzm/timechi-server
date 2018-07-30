@@ -13,7 +13,7 @@ import (
 func authenticate(handler httprouter.Handle) httprouter.Handle {
 	return func(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 		
-		if token, err := jwt.ParseWithClaims(r.Header.Get("Authorization"), &models.TokenClaims{}, func(token *jwt.Token) (interface{}, error) {
+		if token, err := jwt.ParseWithClaims(r.Header.Get(helpers.AuthorizationHeader), &models.TokenClaims{}, func(token *jwt.Token) (interface{}, error) {
 			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 				return nil, fmt.Errorf("unexpected siging method")
 			}
