@@ -23,3 +23,20 @@ func (j *TimeV1) From(m *models.Time) {
 	j.Duration = m.Duration
 	j.UserID = m.UserID
 }
+
+type TimesV1 struct {
+	Items   []TimeV1 `json:"items"`
+	Page    int      `json:"page,omitempty"`
+	PerPage int      `json:"per_page,omitempty"`
+	Total   int      `json:"total,omitempty"`
+}
+
+func (j *TimesV1) From(ms *[]models.Time, page int, perPage int, total int) {
+	j.Items = make([]TimeV1, len(*ms))
+	for i, m := range *ms {
+		j.Items[i].From(&m)
+	}
+	j.Page = page
+	j.PerPage = perPage
+	j.Total = total
+}
