@@ -14,5 +14,10 @@ func SetupRouter() {
 	userController := UserControllerV1{}
 	Router.POST("/v1/user/register", userController.Register)
 	Router.POST("/v1/user/login", userController.Login)
-	Router.GET("/v1/user", Authenticate(userController.Profile))
+	Router.GET("/v1/user", authenticate(userController.Profile))
+	
+	timeController := TimeController{}
+	Router.POST("/v1/time", authenticate(timeController.StartTimer))
+	Router.PUT("/v1/time", authenticate(timeController.StopTimer))
+	Router.GET("/v1/time", authenticate(timeController.Times))
 }
