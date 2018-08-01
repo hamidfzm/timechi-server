@@ -40,7 +40,7 @@ func (m *User) StartTimer(title string) error {
 	}
 }
 
-func (m *User) StopTimer() error {
+func (m *User) StopTimer() (t Time, err error) {
 	tx := DB.Begin()
 	defer func() {
 		if r := recover(); r != nil {
@@ -49,37 +49,44 @@ func (m *User) StopTimer() error {
 	}()
 	
 	if tx.Error != nil {
-		return tx.Error
+		err = tx.Error
+		return
 	}
 	
 	if m.TimerStartAt != nil && m.TimerTitle != nil {
 		now := time.Now()
-		if err := tx.Create(
-			&Time{
-				UserID:    m.ID,
-				Title:     *m.TimerTitle,
-				StartedAt: *m.TimerStartAt,
-				StoppedAt: now,
-				Duration:  now.Sub(*m.TimerStartAt)}).Error; err != nil {
+		t = Time{
+			UserID:    m.ID,
+			Title:     *m.TimerTitle,
+			StartedAt: *m.TimerStartAt,
+			StoppedAt: now,
+			Duration:  now.Sub(*m.TimerStartAt),
+		}
+		
+		if err = tx.Create(&t).Error; err != nil {
 			tx.Rollback()
-			return err
+			return
 		}
 	} else {
 		tx.Rollback()
-		return gorm.ErrRecordNotFound
+		err = gorm.ErrRecordNotFound
+		return
 	}
 	
 	if subTx := tx.Model(m).
 		Where("timer_title IS NOT NULL AND timer_start_at IS NOT NULL").
 		Updates(map[string]interface{}{"timer_title": nil, "timer_start_at": nil}); subTx.Error != nil {
 		tx.Rollback()
-		return subTx.Error
+		err = subTx.Error
+		return
 	} else if subTx.RowsAffected == 0 {
 		tx.Rollback()
-		return gorm.ErrRecordNotFound
+		err = gorm.ErrRecordNotFound
+		return
 	}
 	
-	return tx.Commit().Error
+	err = tx.Commit().Error
+	return
 }
 
 func (m *User) Times() (times []Time) {

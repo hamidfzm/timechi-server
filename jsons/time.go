@@ -6,13 +6,17 @@ import (
 	"github.com/hamidfzm/timechi-server/helpers"
 )
 
+type StartTimerV1 struct {
+	Title string `json:"title" validate:"required"`
+}
+
 type TimeV1 struct {
 	ID        uint             `json:"id"`
 	Title     string           `json:"title"`
 	StartedAt helpers.JSONTime `json:"started_at"`
-	StoppedAt helpers.JSONTime `json:"stopped_at"`
-	Duration  time.Duration    `json:"duration"`
-	UserID    uint             `json:"user_id"`
+	StoppedAt helpers.JSONTime `json:"stopped_at,omitempty"`
+	Duration  time.Duration    `json:"duration,omitempty"`
+	UserID    uint             `json:"user_id,omitempty"`
 }
 
 func (j *TimeV1) From(m *models.Time) {

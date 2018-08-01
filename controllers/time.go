@@ -10,27 +10,39 @@ import (
 type TimeController struct{}
 
 func (c TimeController) StartTimer(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
-	var resp jsons.TimeV1
+	var req jsons.StartTimerV1
+	
+	if err := helpers.DecodeJsonRequest(r, &req); err != nil {
+		helpers.Abort(w, http.StatusBadRequest)
+	}
+	
+	if err := helpers.Validate.Struct(req); err != nil {
+		helpers.Abort(w, http.StatusUnprocessableEntity)
+	}
 	
 	user := currentUser(r)
-	if err := user.StartTimer("test"); err != nil {
+	if err := user.StartTimer(req.Title); err != nil {
 		helpers.Abort(w, http.StatusConflict)
 	}
 	
-	//resp.From()
+	var resp jsons.TimeV1
+	resp.Title = *user.TimerTitle
+	resp.StartedAt = helpers.JSONTime{Time: *user.TimerStartAt}
+	
 	helpers.EncodeJsonResponse(w, http.StatusOK, resp)
 }
 
 func (c TimeController) StopTimer(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
-	var resp jsons.TimeV1
 	
 	user := currentUser(r)
-	if err := user.StopTimer(); err != nil {
+	if time, err := user.StopTimer(); err != nil {
 		helpers.Abort(w, http.StatusConflict)
+	} else {
+		var resp jsons.TimeV1
+		
+		resp.From(&time)
+		helpers.EncodeJsonResponse(w, http.StatusOK, resp)
 	}
-	
-	//resp.From()
-	helpers.EncodeJsonResponse(w, http.StatusOK, resp)
 }
 
 func (c TimeController) Times(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
