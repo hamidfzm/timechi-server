@@ -10,7 +10,6 @@ import (
 	"github.com/hamidfzm/timechi-server/models"
 	"encoding/json"
 	"github.com/hamidfzm/timechi-server/jsons"
-	"fmt"
 )
 
 func TestTimeControllerV1_StartTimer(t *testing.T) {
@@ -26,16 +25,41 @@ func TestTimeControllerV1_StartTimer(t *testing.T) {
 	models.SetupTestDatabase()
 	defer models.DB.Close()
 	
-	user := models.User{
-		Name:     "test2",
-		Email:    "test@test.com",
-		Password: helpers.HashPassword("test"),
-	}
-	user.Create()
+	user := models.SetupTestUser()
 	token, _ := user.GenerateToken()
+	body = bytes.NewBufferString("not json")
 	
 	resp = httptest.NewRecorder()
-	reqJson, _ = json.Marshal(jsons.RegisterV1{Email: "test@test.com", Name: "test", Password: "123456"})
+	req, err = http.NewRequest(http.MethodPost, url, body)
+	req.Header.Set(helpers.AuthorizationHeader, token+"test token")
+	if err != nil {
+		t.Error(err)
+	}
+	controllers.Router.ServeHTTP(resp, req)
+	helpers.AssertStatus(t, resp.Code, http.StatusUnauthorized)
+	
+	resp = httptest.NewRecorder()
+	req, err = http.NewRequest(http.MethodPost, url, body)
+	req.Header.Set(helpers.AuthorizationHeader, token)
+	if err != nil {
+		t.Error(err)
+	}
+	controllers.Router.ServeHTTP(resp, req)
+	helpers.AssertStatus(t, resp.Code, http.StatusBadRequest)
+	
+	resp = httptest.NewRecorder()
+	reqJson, _ = json.Marshal(jsons.StartTimerV1{Title: ""})
+	body = bytes.NewBuffer(reqJson)
+	req, err = http.NewRequest(http.MethodPost, url, body)
+	req.Header.Set(helpers.AuthorizationHeader, token)
+	if err != nil {
+		t.Error(err)
+	}
+	controllers.Router.ServeHTTP(resp, req)
+	helpers.AssertStatus(t, resp.Code, http.StatusUnprocessableEntity)
+	
+	resp = httptest.NewRecorder()
+	reqJson, _ = json.Marshal(jsons.StartTimerV1{Title: "test title"})
 	body = bytes.NewBuffer(reqJson)
 	req, err = http.NewRequest(http.MethodPost, url, body)
 	req.Header.Set(helpers.AuthorizationHeader, token)
@@ -44,32 +68,18 @@ func TestTimeControllerV1_StartTimer(t *testing.T) {
 	}
 	controllers.Router.ServeHTTP(resp, req)
 	helpers.AssertStatus(t, resp.Code, http.StatusOK)
-	//json.NewDecoder(resp.Body).Decode(&respJson)
-	fmt.Println(resp.Body)
 	
 	resp = httptest.NewRecorder()
-	reqJson, _ = json.Marshal(jsons.RegisterV1{Email: "test@test.com", Name: "test", Password: "123456"})
+	reqJson, _ = json.Marshal(jsons.StartTimerV1{Title: "test title"})
 	body = bytes.NewBuffer(reqJson)
-	req, err = http.NewRequest(http.MethodPut, url, body)
+	req, err = http.NewRequest(http.MethodPost, url, body)
 	req.Header.Set(helpers.AuthorizationHeader, token)
 	if err != nil {
 		t.Error(err)
 	}
 	controllers.Router.ServeHTTP(resp, req)
-	helpers.AssertStatus(t, resp.Code, http.StatusOK)
-	//json.NewDecoder(resp.Body).Decode(&respJson)
-	fmt.Println(resp.Body)
+	helpers.AssertStatus(t, resp.Code, http.StatusConflict)
 	
-	resp = httptest.NewRecorder()
-	req, err = http.NewRequest(http.MethodGet, url, nil)
-	req.Header.Set(helpers.AuthorizationHeader, token)
-	if err != nil {
-		t.Error(err)
-	}
-	controllers.Router.ServeHTTP(resp, req)
-	helpers.AssertStatus(t, resp.Code, http.StatusOK)
-	//json.NewDecoder(resp.Body).Decode(&respJson)
-	fmt.Println(resp.Body)
 }
 
 func TestTimeControllerV1_StopTimer(t *testing.T) {
@@ -85,50 +95,32 @@ func TestTimeControllerV1_StopTimer(t *testing.T) {
 	models.SetupTestDatabase()
 	defer models.DB.Close()
 	
-	user := models.User{
-		Name:     "test2",
-		Email:    "test@test.com",
-		Password: helpers.HashPassword("test"),
-	}
-	user.Create()
+	user := models.SetupTestUser()
 	token, _ := user.GenerateToken()
 	
-	resp = httptest.NewRecorder()
-	reqJson, _ = json.Marshal(jsons.RegisterV1{Email: "test@test.com", Name: "test", Password: "123456"})
-	body = bytes.NewBuffer(reqJson)
-	req, err = http.NewRequest(http.MethodPost, url, body)
-	req.Header.Set(helpers.AuthorizationHeader, token)
-	if err != nil {
-		t.Error(err)
-	}
-	controllers.Router.ServeHTTP(resp, req)
-	helpers.AssertStatus(t, resp.Code, http.StatusOK)
-	//json.NewDecoder(resp.Body).Decode(&respJson)
-	fmt.Println(resp.Body)
+	user.StartTimer("test title")
 	
 	resp = httptest.NewRecorder()
-	reqJson, _ = json.Marshal(jsons.RegisterV1{Email: "test@test.com", Name: "test", Password: "123456"})
 	body = bytes.NewBuffer(reqJson)
-	req, err = http.NewRequest(http.MethodPut, url, body)
+	req, err = http.NewRequest(http.MethodDelete, url, body)
 	req.Header.Set(helpers.AuthorizationHeader, token)
 	if err != nil {
 		t.Error(err)
 	}
 	controllers.Router.ServeHTTP(resp, req)
 	helpers.AssertStatus(t, resp.Code, http.StatusOK)
-	//json.NewDecoder(resp.Body).Decode(&respJson)
-	fmt.Println(resp.Body)
 	
 	resp = httptest.NewRecorder()
-	req, err = http.NewRequest(http.MethodGet, url, nil)
+	body = bytes.NewBuffer(reqJson)
+	req, err = http.NewRequest(http.MethodDelete, url, body)
 	req.Header.Set(helpers.AuthorizationHeader, token)
 	if err != nil {
 		t.Error(err)
 	}
 	controllers.Router.ServeHTTP(resp, req)
-	helpers.AssertStatus(t, resp.Code, http.StatusOK)
-	//json.NewDecoder(resp.Body).Decode(&respJson)
-	fmt.Println(resp.Body)
+	helpers.AssertStatus(t, resp.Code, http.StatusConflict)
+	
+	// TODO cover conflict status
 }
 
 func TestTimeControllerV1_Times(t *testing.T) {
@@ -144,48 +136,28 @@ func TestTimeControllerV1_Times(t *testing.T) {
 	models.SetupTestDatabase()
 	defer models.DB.Close()
 	
-	user := models.User{
-		Name:     "test2",
-		Email:    "test@test.com",
-		Password: helpers.HashPassword("test"),
-	}
-	user.Create()
+	user := models.SetupTestUser()
 	token, _ := user.GenerateToken()
 	
-	resp = httptest.NewRecorder()
-	reqJson, _ = json.Marshal(jsons.RegisterV1{Email: "test@test.com", Name: "test", Password: "123456"})
-	body = bytes.NewBuffer(reqJson)
-	req, err = http.NewRequest(http.MethodPost, url, body)
-	req.Header.Set(helpers.AuthorizationHeader, token)
-	if err != nil {
-		t.Error(err)
-	}
-	controllers.Router.ServeHTTP(resp, req)
-	helpers.AssertStatus(t, resp.Code, http.StatusOK)
-	//json.NewDecoder(resp.Body).Decode(&respJson)
-	fmt.Println(resp.Body)
+	user.StartTimer("test title")
+	user.StopTimer()
+	
+	user.StartTimer("test title 2")
+	user.StopTimer()
+	
+	
+	user.StartTimer("test title 2")
+	user.StopTimer()
 	
 	resp = httptest.NewRecorder()
-	reqJson, _ = json.Marshal(jsons.RegisterV1{Email: "test@test.com", Name: "test", Password: "123456"})
 	body = bytes.NewBuffer(reqJson)
-	req, err = http.NewRequest(http.MethodPut, url, body)
+	req, err = http.NewRequest(http.MethodGet, url, body)
 	req.Header.Set(helpers.AuthorizationHeader, token)
 	if err != nil {
 		t.Error(err)
 	}
 	controllers.Router.ServeHTTP(resp, req)
 	helpers.AssertStatus(t, resp.Code, http.StatusOK)
-	//json.NewDecoder(resp.Body).Decode(&respJson)
-	fmt.Println(resp.Body)
 	
-	resp = httptest.NewRecorder()
-	req, err = http.NewRequest(http.MethodGet, url, nil)
-	req.Header.Set(helpers.AuthorizationHeader, token)
-	if err != nil {
-		t.Error(err)
-	}
-	controllers.Router.ServeHTTP(resp, req)
-	helpers.AssertStatus(t, resp.Code, http.StatusOK)
-	//json.NewDecoder(resp.Body).Decode(&respJson)
-	fmt.Println(resp.Body)
+	// TODO check items count
 }

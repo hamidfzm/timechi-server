@@ -50,6 +50,9 @@ func (c TimeController) Times(w http.ResponseWriter, r *http.Request, p httprout
 	
 	user := currentUser(r)
 	times := user.Times()
+	
+	// TODO implement pagination
+	
 	resp.From(&times, 1, 10, 10)
 	helpers.EncodeJsonResponse(w, http.StatusOK, resp)
 }

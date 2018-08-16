@@ -31,3 +31,14 @@ func SetupTestDatabase() {
 	DB.DropTableIfExists(tables...)
 	DB.AutoMigrate(tables...)
 }
+
+func SetupTestUser() *User {
+	user := User{
+		Name:     "test",
+		Email:    "test@test.com",
+		Password: helpers.HashPassword("test"),
+	}
+	user.Create()
+	
+	return &user
+}

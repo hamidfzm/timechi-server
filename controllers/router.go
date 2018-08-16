@@ -18,6 +18,6 @@ func SetupRouter() {
 	
 	timeController := TimeController{}
 	Router.POST("/v1/time", authenticate(timeController.StartTimer))
-	Router.PUT("/v1/time", authenticate(timeController.StopTimer))
+	Router.DELETE("/v1/time", authenticate(timeController.StopTimer))
 	Router.GET("/v1/time", authenticate(timeController.Times))
 }
