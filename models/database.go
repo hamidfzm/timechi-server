@@ -10,7 +10,7 @@ var DB *gorm.DB
 var tables = []interface{}{&User{}, &Time{}}
 
 func SetupDatabase() {
-	if db, err := gorm.Open("sqlite3", "develop.db"); err != nil {
+	if db, err := gorm.Open("sqlite3", helpers.Config.DBName); err != nil {
 		panic("failed to connect database")
 	} else {
 		DB = db
@@ -21,7 +21,7 @@ func SetupDatabase() {
 }
 
 func SetupTestDatabase() {
-	if db, err := gorm.Open("sqlite3", "../test.db"); err != nil {
+	if db, err := gorm.Open("sqlite3", "../data/test.db"); err != nil {
 		panic("failed to connect database")
 	} else {
 		DB = db
