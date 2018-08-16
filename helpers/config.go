@@ -9,9 +9,10 @@ import (
 )
 
 type config struct {
-	Port      int
-	Secret    string
-	Debug     bool
+	Port   int
+	Secret string
+	Debug  bool
+	DBName string `mapstructure:"db_name"`
 }
 
 var Config config
@@ -22,6 +23,7 @@ func init() {
 	viper.SetDefault("port", 8080)
 	viper.SetDefault("debug", false)
 	viper.SetDefault("secret", "secret")
+	viper.SetDefault("db_name", "data/timechi.db")
 }
 
 func initConfig() {
@@ -34,7 +36,7 @@ func initConfig() {
 		
 		// Search config in home directory with name ".cobra" (without extension).
 		viper.AddConfigPath("/etc/timechi/")
-		viper.AddConfigPath(".")
+		viper.AddConfigPath("./data")
 	}
 	
 	if err := viper.ReadInConfig(); err != nil {
