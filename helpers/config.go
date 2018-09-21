@@ -24,6 +24,7 @@ func init() {
 	viper.SetDefault("debug", false)
 	viper.SetDefault("secret", "secret")
 	viper.SetDefault("db_name", "data/timechi.db")
+	viper.BindEnv("port", "PORT")
 }
 
 func initConfig() {
