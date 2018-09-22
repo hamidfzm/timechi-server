@@ -7,6 +7,7 @@
 .idea/
 config.*
 !config.yml.sample
+!config.go
 *.db
 
 ## File-based project format:
